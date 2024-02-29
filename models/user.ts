@@ -3,8 +3,6 @@ import bcrypt from "bcrypt";
 
 const SALT_ROUNDS = 6;
 
-const { Schema } = mongoose;
-
 // 1. Create an interface representing a document in MongoDB
 export interface UserInput {
   name: string;
@@ -15,7 +13,7 @@ export interface UserInput {
 
 
 // 2. Create a Schema corresponding to the document interface.
-const userSchema = new Schema<UserInput>(
+const userSchema = new mongoose.Schema<UserInput>(
   {
     name: { type: String, required: true },
     email: {

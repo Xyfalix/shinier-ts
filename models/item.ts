@@ -1,7 +1,29 @@
-const mongoose = require("mongoose");
-const User = require("./user");
+import mongoose from "mongoose";
+import User from "./user";
 
-const reviewSchema = new mongoose.Schema(
+// 1. Create an interface representing a document in MongoDB
+export interface ReviewInput {
+  text: string;
+  rating: number;
+  user: mongoose.Types.ObjectId,
+  image?: string;
+}
+
+export interface ItemInput {
+  itemId: string;
+  itemName: string;
+  itemPrice: number;
+  itemRarity: string;
+  itemImage: string;
+  setName: string;
+  setNumber: string;
+  setTotal: number;
+  availableStock: number;
+  reviews: ReviewInput[];
+}
+
+// 2. Create a Schema corresponding to the document interface.
+const reviewSchema = new mongoose.Schema<ReviewInput>(
   {
     text: {
       type: String,
@@ -25,7 +47,7 @@ const reviewSchema = new mongoose.Schema(
   },
 );
 
-const itemSchema = new mongoose.Schema(
+const itemSchema = new mongoose.Schema<ItemInput>(
   {
     itemId: {
       type: String,
@@ -72,6 +94,5 @@ const itemSchema = new mongoose.Schema(
   },
 );
 
-const Item = mongoose.model("Item", itemSchema);
-
-module.exports = Item;
+// 3. Create a Model.
+export default mongoose.model<ItemInput>("Item", itemSchema);
