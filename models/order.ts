@@ -1,6 +1,15 @@
-const mongoose = require("mongoose");
-const User = require("./user");
-const Item = require("./item");
+import mongoose from "mongoose";
+import User from "./user";
+import Item, {ItemDocument} from "./item";
+
+export interface LineItemInput {
+  qty: number;
+  item: mongoose.Types.ObjectId | ItemDocument;
+}
+
+export interface LineItemExtPrice extends LineItemInput, mongoose.Document{
+  extPrice: number;
+}
 
 const lineItemSchema = new mongoose.Schema(
   {
@@ -21,14 +30,20 @@ const lineItemSchema = new mongoose.Schema(
   },
 );
 
-lineItemSchema.virtual("extPrice").get(function () {
+lineItemSchema.virtual("extPrice").get(function (this: LineItemExtPrice) {
   // Check if item is populated
-  if (this.item && this.item.itemPrice) {
-    return this.qty * this.item.itemPrice;
+  if (this.item && (this.item as ItemDocument) .itemPrice) {
+    return this.qty * (this.item as ItemDocument).itemPrice;
   } else {
     return 0; // Handle cases where item is not populated or itemPrice is missing
   }
 });
+
+interface OrderDocument extends mongoose.Document {
+  lineItems: LineItemExtPrice[];
+  orderStatus: string;
+  user: mongoose.Types.ObjectId;
+}
 
 const orderSchema = new mongoose.Schema(
   {
@@ -50,18 +65,18 @@ const orderSchema = new mongoose.Schema(
   },
 );
 
-orderSchema.virtual("orderTotal").get(function () {
+orderSchema.virtual("orderTotal").get(function (this: OrderDocument) {
   return this.lineItems.reduce((total, item) => total + item.extPrice, 0);
 });
 
-orderSchema.virtual("totalQty").get(function () {
+orderSchema.virtual("totalQty").get(function (this: OrderDocument) {
   return this.lineItems.reduce((total, item) => total + item.qty, 0);
 });
 
-orderSchema.virtual("orderId").get(function () {
+orderSchema.virtual("orderId").get(function (this: OrderDocument) {
   return this.id.slice(-6).toUpperCase();
 });
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.model<OrderDocument>("Order", orderSchema);
 
 module.exports = Order;

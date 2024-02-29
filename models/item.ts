@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 import User from "./user";
 
 // 1. Create an interface representing a document in MongoDB
-export interface ReviewInput {
+export interface ReviewDocument {
   text: string;
   rating: number;
   user: mongoose.Types.ObjectId,
   image?: string;
 }
 
-export interface ItemInput {
+export interface ItemDocument {
   itemId: string;
   itemName: string;
   itemPrice: number;
@@ -19,11 +19,11 @@ export interface ItemInput {
   setNumber: string;
   setTotal: number;
   availableStock: number;
-  reviews: ReviewInput[];
+  reviews: ReviewDocument[];
 }
 
 // 2. Create a Schema corresponding to the document interface.
-const reviewSchema = new mongoose.Schema<ReviewInput>(
+const reviewSchema = new mongoose.Schema<ReviewDocument>(
   {
     text: {
       type: String,
@@ -47,7 +47,7 @@ const reviewSchema = new mongoose.Schema<ReviewInput>(
   },
 );
 
-const itemSchema = new mongoose.Schema<ItemInput>(
+const itemSchema = new mongoose.Schema<ItemDocument>(
   {
     itemId: {
       type: String,
@@ -95,4 +95,4 @@ const itemSchema = new mongoose.Schema<ItemInput>(
 );
 
 // 3. Create a Model.
-export default mongoose.model<ItemInput>("Item", itemSchema);
+export default mongoose.model<ItemDocument>("Item", itemSchema);
